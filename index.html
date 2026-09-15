@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHARGEOPS — EV Fleet & Charging Operations Console</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300D09C'><path d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/></svg>">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- ====================================================================
+         SIDEBAR NAVIGATION
+         ==================================================================== -->
+    <aside class="sidebar">
+      <div class="brand-section">
+        <div class="brand-logo">⚡</div>
+        <div class="brand-info">
+          <div class="brand-title">
+            CHARGEOPS <span class="brand-badge">PRO</span>
+          </div>
+          <div class="brand-sub">Voltis Fleet Operations</div>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-section-title">Fleet Command</div>
+        <a class="nav-item active" data-tab="overview">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          </span>
+          <span>Fleet Overview</span>
+        </a>
+
+        <a class="nav-item" data-tab="vehicles">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          </span>
+          <span>Vehicles & Roster</span>
+          <span class="nav-counter">28</span>
+        </a>
+
+        <a class="nav-item" data-tab="dispatch">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          </span>
+          <span>Dispatch Matrix</span>
+          <span class="nav-counter" style="color: var(--accent-energy);">Ready</span>
+        </a>
+
+        <div class="nav-section-title">Energy & Grid</div>
+        <a class="nav-item" data-tab="charging">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          </span>
+          <span>Charging & Queue</span>
+          <span class="nav-counter" style="color: var(--accent-power-bright);">1.4 MW</span>
+        </a>
+
+        <a class="nav-item" data-tab="maintenance">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+          </span>
+          <span>Battery & SOH</span>
+          <span class="nav-counter alert-badge">1 Hold</span>
+        </a>
+
+        <a class="nav-item" data-tab="alerts">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          </span>
+          <span>Live Alerts</span>
+          <span class="nav-counter alert-badge">3</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="grid-telemetry-mini">
+          <div class="grid-label">
+            <span>Depot Grid Load</span>
+            <span style="color: var(--accent-energy); font-weight: 600;">1,420 / 2,000 kW</span>
+          </div>
+          <div class="grid-progress-bar">
+            <div class="grid-progress-fill" style="width: 71%;"></div>
+          </div>
+        </div>
+        <div class="system-status-indicator">
+          <div class="status-dot"></div>
+          <span>OCPP 2.0.1 Telemetry Live</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ====================================================================
+         MAIN CONTENT VIEWPORT
+         ==================================================================== -->
+    <main class="main-content">
+      
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="page-context">
+            <h1 class="page-title" id="activePageTitle">Fleet Telemetry & Operations Overview</h1>
+          </div>
+          <div class="depot-pill">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--accent-power-bright);"></span>
+            Central Depot Hub (Terminal 4)
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="quick-metric optional">
+            <span style="color: var(--text-muted);">Fleet SOC:</span>
+            <span class="metric-val-green">73.8%</span>
+          </div>
+          <div class="quick-metric optional">
+            <span style="color: var(--text-muted);">Efficiency:</span>
+            <span class="metric-val-blue">21.4 kWh/100km</span>
+          </div>
+          <button class="btn btn-icon-only" id="btnSoundToggle" title="Toggle Sound Feedback">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          </button>
+          <button class="btn btn-hero-dispatch" id="btnTriggerHeroDispatch">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <span>Evaluate 142 km Dispatch</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ==================================================================
+           ENERGY READINESS RAIL (VISUAL SIGNATURE)
+           ================================================================== -->
+      <section class="energy-readiness-rail-container">
+        <div class="rail-header">
+          <div class="rail-title-group">
+            <span class="rail-badge">ENERGY READINESS RAIL</span>
+            <span class="rail-subtext">Real-time state of charge vs departure schedule buffer</span>
+          </div>
+          <div class="rail-legend">
+            <div class="legend-item"><span class="legend-swatch ready"></span> Ready (>70%)</div>
+            <div class="legend-item"><span class="legend-swatch charging"></span> Fast Charging</div>
+            <div class="legend-item"><span class="legend-swatch deficit"></span> Range Deficit (<35%)</div>
+            <div class="legend-item"><span class="legend-swatch maintenance"></span> Held / SOH Check</div>
+          </div>
+        </div>
+
+        <div class="rail-track-wrapper" style="display: flex; align-items: center; gap: 8px;">
+          <button class="btn-icon-only rail-scroll-btn" id="railScrollLeft" title="Scroll Left" style="padding: 6px; border-radius: 50%; height: 28px; width: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <div class="rail-track" id="energyReadinessRailTrack" style="flex-grow: 1;">
+            <!-- Rendered dynamically by app.js -->
+          </div>
+          <button class="btn-icon-only rail-scroll-btn" id="railScrollRight" title="Scroll Right" style="padding: 6px; border-radius: 50%; height: 28px; width: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           VIEW CONTENT AREA (TABS)
+           ================================================================== -->
+      <div class="view-content-area">
+
+        <!-- TAB 1: FLEET OVERVIEW -->
+        <div class="tab-pane active" id="tab-overview">
+          
+          <!-- Hero Dispatch Trigger Banner -->
+          <div class="hero-dispatch-banner" id="heroDispatchBanner">
+            <div class="hero-dispatch-left">
+              <div class="hero-pulse-indicator">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="hero-dispatch-content">
+                <h4>HERO FLOW: NEW 142 KM DISPATCH SIMULATION</h4>
+                <p>Express Cold-Chain Route (142 km, +320m elevation). System evaluates fleet range buffers in real time.</p>
+              </div>
+            </div>
+            <div class="hero-dispatch-actions">
+              <button class="btn btn-hero-dispatch" onclick="document.getElementById('btnTriggerHeroDispatch').click();">
+                <span>Inspect Candidates</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- KPI Cards Grid -->
+          <div class="overview-kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-card-title">Fleet Availability</span>
+                <div class="kpi-card-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                </div>
+              </div>
+              <div class="kpi-card-value" id="kpiTotalFleet">28 Vehicles</div>
+              <div class="kpi-sub-breakdown">
+                <span>On Road: <strong class="kpi-badge-green" id="kpiOnRoadCount">14</strong></span>
+                <span>Charging: <strong class="kpi-badge-blue">7</strong></span>
+                <span>Idle: <strong class="kpi-badge-amber">5</strong></span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-card-title">Average Battery SOC</span>
+                <div class="kpi-card-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-energy)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                </div>
+              </div>
+              <div class="kpi-card-value" style="color: var(--accent-energy);">73.8%</div>
+              <div class="kpi-card-meta">
+                <span>Fleet Mean Range: <strong>214 km</strong></span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-card-title">Depot Power Draw</span>
+                <div class="kpi-card-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-power-bright)" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+                </div>
+              </div>
+              <div class="kpi-card-value" style="color: var(--accent-power-bright);">1,420 kW</div>
+              <div class="kpi-card-meta">
+                <span>Peak Cap: <strong>2,000 kW (71% Load)</strong></span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-card-title">Electricity Tariff</span>
+                <div class="kpi-card-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+              </div>
+              <div class="kpi-card-value">$0.128</div>
+              <div class="kpi-card-meta">
+                <span>Per kWh • Off-Peak Window</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Split Grid: Depot Map & Power Management Curve -->
+          <div class="dashboard-split-grid">
+            
+            <!-- Map Viewport -->
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-power-bright)" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+                  <span>Tactical Fleet GPS & Depot Operations Map</span>
+                </div>
+                <div class="panel-actions">
+                  <span class="badge-status badge-available">Live Telemetry 60 FPS</span>
+                </div>
+              </div>
+
+              <div class="depot-map-viewport">
+                <canvas id="depotMapCanvas"></canvas>
+                <div class="map-telemetry-overlay">
+                  <div>LAT/LONG: 10.7769° N, 106.7009° E</div>
+                  <div>DEPOT CAD: SECTOR T-4 CENTRAL</div>
+                  <div>ACTIVE TELEMETRY BEACONS: 28/28</div>
+                </div>
+                <div class="map-legend-overlay">
+                  <span style="color: var(--accent-energy);">● Ready / Available</span>
+                  <span style="color: var(--accent-power-bright);">● Charging</span>
+                  <span style="color: var(--accent-purple);">● En Route</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Power Curve Panel -->
+            <div class="panel power-demand-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-energy)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                  <span>Depot Megawatt Power Curve & Peak Shaving</span>
+                </div>
+                <div class="panel-actions">
+                  <span class="depot-pill" style="font-size: 10px;">Smart Tariff Mode</span>
+                </div>
+              </div>
+
+              <div class="power-stats-row">
+                <div class="power-stat-item">
+                  <span class="power-stat-label">Current Grid Draw</span>
+                  <span class="power-stat-val" style="color: var(--accent-energy);">1.42 MW</span>
+                </div>
+                <div class="power-stat-item">
+                  <span class="power-stat-label">Peak Demand Cap</span>
+                  <span class="power-stat-val" style="color: var(--accent-danger);">2.00 MW</span>
+                </div>
+                <div class="power-stat-item">
+                  <span class="power-stat-label">Est. Peak Savings</span>
+                  <span class="power-stat-val" style="color: var(--accent-power-bright);">$420 / day</span>
+                </div>
+              </div>
+
+              <div class="power-chart-container">
+                <canvas id="powerCurveCanvas"></canvas>
+              </div>
+
+              <div class="power-actions-footer">
+                <span>Autonomous peak load shaving prevents utility demand surge penalties.</span>
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="window.App.switchTab('charging');">
+                  Manage Stalls
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- TAB 2: VEHICLES & FLEET ROSTER -->
+        <div class="tab-pane" id="tab-vehicles">
+          <div class="table-toolbar">
+            <div class="search-filter-group">
+              <div class="input-search-wrapper">
+                <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="vehicleSearchInput" placeholder="Search by ID, model, plate, or driver...">
+              </div>
+              <div class="filter-pills">
+                <button class="filter-btn active" data-filter="all">All (28)</button>
+                <button class="filter-btn" data-filter="available">Available</button>
+                <button class="filter-btn" data-filter="charging">Charging</button>
+                <button class="filter-btn" data-filter="enroute">En Route</button>
+                <button class="filter-btn" data-filter="maintenance">Maintenance</button>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="document.getElementById('btnTriggerHeroDispatch').click();">
+              <span>+ New Dispatch</span>
+            </button>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Vehicle & Model</th>
+                  <th>License Plate</th>
+                  <th>Assigned Driver</th>
+                  <th>Status</th>
+                  <th>Battery SOC</th>
+                  <th>Est. Range</th>
+                  <th>Health (SOH)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="vehicleTableBody">
+                <!-- Rendered by app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 3: DISPATCH OPERATIONS -->
+        <div class="tab-pane" id="tab-dispatch">
+          <div class="panel" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <div>
+                <h3 style="font-family: var(--font-display); font-size: 18px; font-weight: 700;">Intelligent Range & Elevation Match Matrix</h3>
+                <p style="color: var(--text-secondary); font-size: 12px;">Autonomous energy consumption prediction factoring in route gradient, cargo weight, and battery thermal state.</p>
+              </div>
+              <button class="btn btn-hero-dispatch" onclick="document.getElementById('btnTriggerHeroDispatch').click();">
+                Launch 142 km Scenario
+              </button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+              <div style="background: var(--bg-sidebar); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 16px;">
+                <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">DISPATCH QUEUE ID</div>
+                <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--text-primary);">DSP-8842</div>
+                <div style="font-size: 12px; color: var(--accent-energy); margin-top: 4px;">Destination: North Logistics Hub</div>
+                <div style="margin-top: 12px; font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">
+                  Distance: 142 km • Elevation: +320m • Required SOC: ≥ 65%
+                </div>
+              </div>
+
+              <div style="background: var(--bg-sidebar); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 16px;">
+                <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">EVALUATED CANDIDATE #1</div>
+                <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--accent-amber);">EV-104 (Cargo 350)</div>
+                <div style="font-size: 12px; color: var(--accent-amber); margin-top: 4px;">Status: Range Deficit (-60 km)</div>
+                <div style="margin-top: 12px; font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">
+                  Current SOC: 28% (82 km range). Flagged Ineligible.
+                </div>
+              </div>
+
+              <div style="background: var(--bg-sidebar); border: 1px solid var(--accent-energy); border-radius: var(--radius-sm); padding: 16px; box-shadow: 0 0 20px rgba(0, 208, 156, 0.15);">
+                <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-energy); margin-bottom: 6px;">RECOMMENDED MATCH</div>
+                <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--accent-energy);">EV-409 (Cargo 500 LR)</div>
+                <div style="font-size: 12px; color: var(--text-primary); margin-top: 4px;">Status: Optimal Match (+76 km reserve)</div>
+                <div style="margin-top: 12px; font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">
+                  Current SOC: 76% (218 km range). Ready for immediate departure.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: CHARGING OPERATIONS -->
+        <div class="tab-pane" id="tab-charging">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h3 style="font-family: var(--font-display); font-size: 18px; font-weight: 700;">Depot Charging Pedestals (16 Bays)</h3>
+              <p style="color: var(--text-secondary); font-size: 12px;">Active OCPP 2.0.1 charge point management with load balancing & automated phase switching.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <span class="depot-pill">8 DC Fast 150kW</span>
+              <span class="depot-pill">8 AC Level-2 22kW</span>
+            </div>
+          </div>
+
+          <!-- Chargers Grid -->
+          <div class="chargers-grid" id="chargersGridContainer">
+            <!-- Rendered by app.js -->
+          </div>
+
+          <!-- Priority Charging Queue -->
+          <div class="panel" style="margin-top: 10px;">
+            <div class="panel-header">
+              <div class="panel-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-energy)" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                <span>Automated Priority Charging Queue (Dynamic Departure Balancing)</span>
+              </div>
+              <span class="badge-status badge-available">Auto-Rebalancing Active</span>
+            </div>
+            <div style="padding: 16px;" id="chargingQueueList">
+              <!-- Rendered by app.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: MAINTENANCE & BATTERY HEALTH -->
+        <div class="tab-pane" id="tab-maintenance">
+          <div class="panel" style="padding: 24px;">
+            <h3 style="font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 8px;">Battery Cell Health (SOH) & Thermal Telemetry</h3>
+            <p style="color: var(--text-secondary); font-size: 12px; margin-bottom: 20px;">Continuous electrochemical impedance spectroscopy & cell voltage delta tracking across the fleet.</p>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+              <div style="background: var(--bg-sidebar); border: 1px solid var(--border-subtle); padding: 16px; border-radius: var(--radius-sm);">
+                <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">FLEET SOH MEAN</div>
+                <div style="font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--accent-energy);">97.4%</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">26 / 28 vehicles in optimal health tier (>95%)</div>
+              </div>
+              <div style="background: var(--bg-sidebar); border: 1px solid var(--border-subtle); padding: 16px; border-radius: var(--radius-sm);">
+                <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">ACTIVE MAINTENANCE HOLD</div>
+                <div style="font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--accent-danger);">1 Vehicle</div>
+                <div style="font-size: 11px; color: var(--accent-danger); margin-top: 6px;">EV-112: Cell voltage delta 42mV (>30mV threshold)</div>
+              </div>
+              <div style="background: var(--bg-sidebar); border: 1px solid var(--border-subtle); padding: 16px; border-radius: var(--radius-sm);">
+                <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">AVG PACK TEMPERATURE</div>
+                <div style="font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--accent-power-bright);">24.6 °C</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Ideal thermal operating window: 20°C – 30°C</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 6: ALERTS LOG -->
+        <div class="tab-pane" id="tab-alerts">
+          <div class="panel" style="padding: 24px;">
+            <h3 style="font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 8px;">Live Telemetry Alerts & Audit Trail</h3>
+            <p style="color: var(--text-secondary); font-size: 12px; margin-bottom: 16px;">Real-time OCPP and CAN-bus telemetry anomalies, thermal throttles, and dispatch events.</p>
+            <div id="alertsStreamContainer">
+              <!-- Rendered by app.js -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ====================================================================
+         VEHICLE DETAIL SLIDE-OVER DRAWER
+         ==================================================================== -->
+    <div class="drawer-backdrop" id="vehicleDrawer">
+      <div class="drawer-content">
+        <div class="drawer-header">
+          <div>
+            <h3 class="drawer-vehicle-title" id="drawerVehicleId">EV-409</h3>
+            <p style="font-size: 12px; color: var(--text-secondary);" id="drawerVehicleModel">Voltis Cargo 500 Long-Range</p>
+          </div>
+          <button class="btn btn-icon-only" id="drawerCloseBtn" title="Close Drawer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <div class="drawer-body">
+          <div>
+            <div class="drawer-section-title">Telemetry & Battery Specs</div>
+            <div class="telemetry-specs-grid" id="drawerSpecsGrid">
+              <!-- Rendered by app.js -->
+            </div>
+          </div>
+
+          <div>
+            <div class="drawer-section-title">Remote Operational Controls</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <button class="btn btn-secondary" id="btnPreconditionCabin" style="justify-content: flex-start;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-energy)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                <span>Precondition Cabin Thermals (21.5°C)</span>
+              </button>
+              <button class="btn btn-secondary" id="btnRunDiagnostics" style="justify-content: flex-start;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-power-bright)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                <span>Initiate OTA Diagnostic Sweep</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="drawer-footer">
+          <button class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('drawerCloseBtn').click();">
+            Close
+          </button>
+          <button class="btn btn-primary" style="flex: 1;" onclick="document.getElementById('drawerCloseBtn').click(); document.getElementById('btnTriggerHeroDispatch').click();">
+            Dispatch Asset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         HERO DISPATCH SIMULATOR MODAL (142 KM SCENARIO)
+         ==================================================================== -->
+    <div class="modal-backdrop" id="heroDispatchModal">
+      <div class="dispatch-modal-card">
+        
+        <div class="modal-header">
+          <div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-energy); font-weight: 700; text-transform: uppercase;">
+              AI Fleet Dispatch Evaluator • Scenario Run
+            </div>
+            <h3 style="font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text-primary);">
+              Express Cold-Chain Logistics Delivery (142 km)
+            </h3>
+          </div>
+          <button class="btn btn-icon-only" id="modalCloseBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <!-- Route specs banner -->
+        <div class="modal-route-specs">
+          <div>
+            <span style="font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);">ROUTE DISTANCE</span>
+            <div style="font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--text-primary);">142.0 km</div>
+          </div>
+          <div>
+            <span style="font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);">CARGO WEIGHT</span>
+            <div style="font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--text-primary);">1,850 kg</div>
+          </div>
+          <div>
+            <span style="font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);">ELEVATION GRADIENT</span>
+            <div style="font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--accent-amber);">+320 m net</div>
+          </div>
+          <div>
+            <span style="font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);">MIN REQUIRED SOC</span>
+            <div style="font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--accent-energy);">65% (+25km buffer)</div>
+          </div>
+        </div>
+
+        <!-- Candidates Evaluation Grid -->
+        <div class="modal-body">
+          <div style="font-size: 12px; color: var(--text-secondary);">
+            The system evaluated fleet vehicles currently in depot staging against terrain resistance and thermal consumption:
+          </div>
+
+          <div class="evaluation-candidates-grid">
+            
+            <!-- Candidate 1: EV-104 (Lacks Range) -->
+            <div class="candidate-card ineligible">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="candidate-badge-tag">INELIGIBLE • RANGE DEFICIT</span>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-amber); font-weight: 700;">-60 km Shortfall</span>
+              </div>
+              <div>
+                <div class="candidate-vehicle-name">EV-104 — Voltis Cargo 350</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Plate: 51D-921.84 • Driver: Marcus Vance</div>
+              </div>
+              <div class="candidate-metrics">
+                <span>SOC: <strong style="color: var(--accent-amber);">28%</strong></span>
+                <span>Usable Range: <strong>82 km</strong></span>
+                <span>Port: <strong>DC-02</strong></span>
+              </div>
+              <p class="candidate-feedback">
+                ⚠️ <strong>Range Deficit:</strong> Vehicle requires 142 km + 25 km safety reserve (167 km total). At 28% SOC (82 km), vehicle would deplete before reaching Highway Sector 4.
+              </p>
+              <div style="font-size: 10px; font-family: var(--font-mono); color: var(--text-muted);">
+                Recommendation: Maintain fast charging on Bay DC-02 until 12:45.
+              </div>
+            </div>
+
+            <!-- Candidate 2: EV-409 (Optimal Match) -->
+            <div class="candidate-card optimal">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="candidate-badge-tag">OPTIMAL DISPATCH MATCH</span>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-energy); font-weight: 700;">+76 km Safety Buffer</span>
+              </div>
+              <div>
+                <div class="candidate-vehicle-name">EV-409 — Voltis Cargo 500 LR</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Plate: 79A-884.21 • Driver: Elena Rostova</div>
+              </div>
+              <div class="candidate-metrics">
+                <span>SOC: <strong style="color: var(--accent-energy);">76%</strong></span>
+                <span>Usable Range: <strong style="color: var(--accent-energy);">218 km</strong></span>
+                <span>Readiness: <strong>100%</strong></span>
+              </div>
+              <p class="candidate-feedback">
+                ✅ <strong>Optimal Match:</strong> 218 km range comfortably covers 142 km corridor + elevation strain with a 76 km reserve. Battery thermal pack conditioned at 23.8°C.
+              </p>
+              <div style="font-size: 10px; font-family: var(--font-mono); color: var(--accent-energy);">
+                Recommendation: Immediate dispatch authorization.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div style="font-size: 11px; color: var(--text-muted);">
+            Assigning will automatically recalculate Depot Charging Queue & power allocation.
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-secondary" id="modalCancelBtn">Cancel</button>
+            <button class="btn btn-hero-dispatch" id="btnConfirmAssignEV409">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Assign & Dispatch EV-409</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
